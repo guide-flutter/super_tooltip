@@ -164,6 +164,13 @@ class SuperTooltip {
   /// The parameter show the title in the tooltip
   final String title;
 
+  ///
+  /// The param for [_ShapeOverlay]
+  EdgeInsetsGeometry overlayDimensions;
+
+  /// The param for [_BubbleShape]
+  EdgeInsetsGeometry bubbleDimensions;
+
   Offset? _targetCenter;
   OverlayEntry? _backGroundOverlay;
   OverlayEntry? _ballonOverlay;
@@ -210,6 +217,8 @@ class SuperTooltip {
     this.blockOutsidePointerEvents = true,
     this.containsBackgroundOverlay = true,
     this.automaticallyVerticalDirection = false,
+    this.overlayDimensions = const EdgeInsets.all(10),
+    this.bubbleDimensions = const EdgeInsets.all(10),
   })  : assert((maxWidth ?? double.infinity) >= (minWidth ?? 0.0)),
         assert((maxHeight ?? double.infinity) >= (minHeight ?? 0.0));
 
@@ -243,7 +252,7 @@ class SuperTooltip {
       late Widget background;
 
       var shapeOverlay = _ShapeOverlay(touchThrougArea, touchThroughAreaShape,
-          touchThroughAreaCornerRadius, outsideBackgroundColor);
+          touchThroughAreaCornerRadius, outsideBackgroundColor, overlayDimensions);
       final backgroundDecoration =
           DecoratedBox(decoration: ShapeDecoration(shape: shapeOverlay));
 
@@ -379,6 +388,7 @@ class SuperTooltip {
                   ]
                 : null,
             shape: _BubbleShape(
+                bubbleDimensions,
                 popupDirection,
                 _targetCenter,
                 borderRadius,
@@ -735,8 +745,10 @@ class _BubbleShape extends ShapeBorder {
   final double borderWidth;
   final double? left, top, right, bottom;
   final TooltipDirection popupDirection;
+  final EdgeInsetsGeometry customDimensions;
 
   _BubbleShape(
+      this.customDimensions,
       this.popupDirection,
       this.targetCenter,
       this.borderRadius,
@@ -750,7 +762,7 @@ class _BubbleShape extends ShapeBorder {
       this.bottom);
 
   @override
-  EdgeInsetsGeometry get dimensions => new EdgeInsets.all(10.0);
+  EdgeInsetsGeometry get dimensions => customDimensions;
 
   @override
   Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
@@ -979,6 +991,7 @@ class _BubbleShape extends ShapeBorder {
   @override
   ShapeBorder scale(double t) {
     return new _BubbleShape(
+        dimensions,
         popupDirection,
         targetCenter,
         borderRadius,
@@ -1000,16 +1013,18 @@ class _ShapeOverlay extends ShapeBorder {
   final Color outsideBackgroundColor;
   final ClipAreaShape clipAreaShape;
   final double clipAreaCornerRadius;
+  final EdgeInsetsGeometry customDimensions;
 
   _ShapeOverlay(
     this.clipRect,
     this.clipAreaShape,
     this.clipAreaCornerRadius,
     this.outsideBackgroundColor,
+    this.customDimensions,
   );
 
   @override
-  EdgeInsetsGeometry get dimensions => new EdgeInsets.all(10.0);
+  EdgeInsetsGeometry get dimensions => customDimensions;
 
   @override
   Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
@@ -1067,7 +1082,7 @@ class _ShapeOverlay extends ShapeBorder {
   @override
   ShapeBorder scale(double t) {
     return new _ShapeOverlay(
-        clipRect, clipAreaShape, clipAreaCornerRadius, outsideBackgroundColor);
+        clipRect, clipAreaShape, clipAreaCornerRadius, outsideBackgroundColor, dimensions);
   }
 }
 
