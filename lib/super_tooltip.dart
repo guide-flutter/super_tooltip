@@ -171,6 +171,8 @@ class SuperTooltip {
   /// The param for [_BubbleShape]
   EdgeInsetsGeometry bubbleDimensions;
 
+  List<BoxShadow>? shadows;
+
   Offset? _targetCenter;
   OverlayEntry? _backGroundOverlay;
   OverlayEntry? _ballonOverlay;
@@ -219,6 +221,7 @@ class SuperTooltip {
     this.automaticallyVerticalDirection = false,
     this.overlayDimensions = const EdgeInsets.all(10),
     this.bubbleDimensions = const EdgeInsets.all(10),
+    this.shadows,
   })  : assert((maxWidth ?? double.infinity) >= (minWidth ?? 0.0)),
         assert((maxHeight ?? double.infinity) >= (minHeight ?? 0.0));
 
@@ -377,7 +380,7 @@ class SuperTooltip {
         key: tooltipContainerKey,
         decoration: ShapeDecoration(
             color: backgroundColor,
-            shadows: hasShadow
+            shadows: shadows ?? (hasShadow
                 ? [
                     BoxShadow(
                       color: shadowColor,
@@ -386,7 +389,7 @@ class SuperTooltip {
                       spreadRadius: shadowSpreadRadius,
                     )
                   ]
-                : null,
+                : null),
             shape: _BubbleShape(
                 bubbleDimensions,
                 popupDirection,
